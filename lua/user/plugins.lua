@@ -47,6 +47,7 @@ local _border = "rounded"
 
 vim.g.csharpls_path = "C:\\Users\\maya\\.dotnet\\tools\\csharp-ls.EXE"
 vim.g.netcoredbg = "C:\\Users\\maya\\scoop\\shims\\netcoredbg.EXE"
+
 vim.g.coq_settings = {
     limits={
        idle_timeout=0.1,
@@ -84,20 +85,6 @@ vim.lsp.config('csharp_ls', {
                 return name:match('%.slnx?$') ~= nil
             end
         ),
-    on_attach =
-        function(client, bufnr)
-            if client.server_capabilities.signatureHelpProvider then
-                require('lsp-overloads').setup(client, {
-                    ui = {
-                        border = _border
-                    },
-                    keymaps = {
-                        close_signature = "<esc>"
-                    },
-                    display_automatically = true
-                })
-            end
-        end,
 })
 
 vim.lsp.config('rust_analyzer', {
@@ -105,6 +92,16 @@ vim.lsp.config('rust_analyzer', {
 })
 
 require("csharpls_extended").buf_read_cmd_bind()
+
+require('lsp-overloads').setup({
+    ui = {
+        border = _border
+    },
+    keymaps = {
+        close_signature = "<esc>"
+    },
+    display_automatically = false
+})
 
 coq.setup()
 -- lspconfig.setup()

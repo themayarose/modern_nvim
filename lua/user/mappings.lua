@@ -75,7 +75,7 @@ vim.keymap.set({'n'}, '<leader>t', '<Plug>(easymotion-bd-t)')
 -- Completion
 
 vim.keymap.set({'x', 'n', 'v'}, '<leader>/', '<cmd>lua vim.lsp.buf.hover()<cr>', {silent=true})
-vim.keymap.set({'i', 'n'}, '<C-_>', '<cmd>LspOverloadsSignature<cr>', {silent=true})
+vim.keymap.set({'i', 'n'}, '<C-_>', '<cmd>LspOverloads signature<cr>', {silent=true})
 
 vim.keymap.set('n', '<leader>ld', '<cmd>lua vim.lsp.buf.definition()<cr>', {silent=true})
 vim.keymap.set('n', '<leader>li', '<cmd>lua vim.lsp.buf.implementation()<cr>', {silent=true})
