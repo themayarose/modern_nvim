@@ -197,3 +197,69 @@ vim.g.gruvbox_bold = 1
 vim.g.gruvbox_italic = 1
 vim.g.gruvbox_contrast_dark = 'hard'
 vim.g.gruvbox_transparent_bg = 1
+
+-- Neomake
+
+vim.g.neomake_logfile = vim.env.HOME .. '/neomake.log'
+vim.g.neomake_open_list = 0
+vim.g.neomake_verbose = 1
+vim.g["airline#extensions#neomake#enabled"] = 1
+
+vim.g.neomake_restore_maker = {
+    exe='make',
+    args={'restore'},
+    errorformat='%f:%l:%c: %m',
+}
+
+vim.cmd([[
+    let s:spinner_index = 0
+    let s:active_spinners = 0
+
+    " let s:spinner_states = ['|', '/', '--', '\', '|', '/', '--', '\']
+    " let s:spinner_states = ['┤', '┘', '┴', '└', '├', '┌', '┬', '┐']
+    " let s:spinner_states = ['←', '↑', '→', '↓']
+    " let s:spinner_states = ['d', 'q', 'p', 'b']
+    " let s:spinner_states = ['.', 'o', 'O', '°', 'O', 'o', '.']
+    " let s:spinner_states = ['■', '□', '▪', '▫', '▪', '□', '■']
+
+    let s:spinner_states = ['←', '↖', '↑', '↗', '→', '↘', '↓', '↙']
+
+    function! StartSpinner()
+        let b:show_spinner = 1
+        let s:active_spinners += 1
+        if s:active_spinners == 1
+            let s:spinner_timer = timer_start(1000 / len(s:spinner_states), 'SpinSpinner', {'repeat': -1})
+        endif
+    endfunction
+
+    function! StopSpinner()
+        let b:show_spinner = 0
+        let s:active_spinners -= 1
+        if s:active_spinners == 0
+            :call timer_stop(s:spinner_timer)
+        endif
+    endfunction
+
+    function! SpinSpinner(timer)
+        let s:spinner_index = float2nr(fmod(s:spinner_index + 1, len(s:spinner_states)))
+        redraw!
+    endfunction
+
+    function! SpinnerText()
+        if get(b:, 'show_spinner', 0) == 0
+            return " "
+        endif
+
+        return s:spinner_states[s:spinner_index]
+    endfunction
+
+    augroup neomake_hooks
+        au!
+        autocmd User NeomakeJobInit :call StartSpinner()
+        autocmd User NeomakeFinished :call StopSpinner()
+    augroup END
+
+    call airline#parts#define_function('neomake','SpinnerText')
+
+    let g:airline_section_x = airline#section#create_right(['coc_current_function', 'bookmark', 'scrollbar', 'tagbar', 'taglist', 'vista', 'gutentags', 'neomake', 'gen_tags', 'omnisharp', 'grepper', 'codeium', 'filetype'])
+]])
