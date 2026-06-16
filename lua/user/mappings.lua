@@ -14,14 +14,6 @@ vim.keymap.set('n', 'q:', '<nop>')
 vim.keymap.set('n', 'q/', '<nop>')
 vim.keymap.set('n', 'q?', '<nop>')
 
-if vim.fn.has("win32") == 1 then
-    vim.keymap.set('n', '<leader>T', '<cmd>vsp | term pwsh -nol<cr>', {silent=true})
-    vim.keymap.set('n', '<leader>t', '<cmd>sp | term pwsh -nol<cr>', {silent=true})
-else
-    vim.keymap.set('n', '<leader>T', '<cmd>vsp | term', {silent=true})
-    vim.keymap.set('n', '<leader>t', '<cmd>sp | term', {silent=true})
-end
-
 vim.keymap.set('i', 'jj', '<esc>')
 
 vim.keymap.set('n', '<leader>a', '<C-w>h', {silent=true})
