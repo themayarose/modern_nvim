@@ -14,8 +14,13 @@ vim.keymap.set('n', 'q:', '<nop>')
 vim.keymap.set('n', 'q/', '<nop>')
 vim.keymap.set('n', 'q?', '<nop>')
 
-vim.keymap.set('n', '<leader>T', '<cmd>vsp | term pwsh -nol<cr>', {silent=true})
-vim.keymap.set('n', '<leader>t', '<cmd>sp | term pwsh -nol<cr>', {silent=true})
+if vim.fn.has("win32") == 1 then
+    vim.keymap.set('n', '<leader>T', '<cmd>vsp | term pwsh -nol<cr>', {silent=true})
+    vim.keymap.set('n', '<leader>t', '<cmd>sp | term pwsh -nol<cr>', {silent=true})
+else
+    vim.keymap.set('n', '<leader>T', '<cmd>vsp | term', {silent=true})
+    vim.keymap.set('n', '<leader>t', '<cmd>sp | term', {silent=true})
+end
 
 vim.keymap.set('i', 'jj', '<esc>')
 
@@ -35,16 +40,15 @@ vim.keymap.set('n', '-', '<C-w>-')
 vim.keymap.set('n', '<c-+>', '<C-w>>')
 vim.keymap.set('n', '<c-->', '<C-w><')
 
-vim.keymap.set('t', '<Esc><Esc>', '<c-leader><c-n><c-w><c-p>')
-vim.keymap.set('t', '<c-leader><c-leader>', '<c-leader><c-n>')
-vim.keymap.set('t', '<c-left>', '<c-leader><c-n><c-w>h', {silent=true})
-vim.keymap.set('t', '<c-down>', '<c-leader><c-n><c-w>j', {silent=true})
-vim.keymap.set('t', '<c-up>', '<c-leader><c-n><c-w>k', {silent=true})
-vim.keymap.set('t', '<c-right>', '<c-leader><c-n><c-w>l', {silent=true})
+vim.keymap.set('t', '<Esc><Esc>', [[<c-\><c-n><c-w><c-p>]])
+vim.keymap.set('t', [[<c-\><c-\>]], [[<c-\><c-n>]])
+vim.keymap.set('t', '<c-left>', [[<c-\><c-n><c-w>h]], {silent=true})
+vim.keymap.set('t', '<c-down>', [[<c-\><c-n><c-w>j]], {silent=true})
+vim.keymap.set('t', '<c-up>', [[<c-\><c-n><c-w>k]], {silent=true})
+vim.keymap.set('t', '<c-right>', [[<c-\><c-n><c-w>l]], {silent=true})
 
 vim.keymap.set('n', '<leader>bn', '<cmd>new<cr>', {silent=true})
 vim.keymap.set('n', '<leader>bw', '<cmd>bp<cr><cmd>bw #<cr>', {silent=true})
-vim.keymap.set('n', '<leader>w', '<cmd>bp<cr><cmd>bw #<cr>', {silent=true})
 vim.keymap.set('n', '<leader>bs', '<cmd>b #<cr>', {silent=true})
 vim.keymap.set('n', '<leader>=', '<cmd>bn<cr>', {silent=true})
 vim.keymap.set('n', '<leader>-', '<cmd>bp<cr>', {silent=true})

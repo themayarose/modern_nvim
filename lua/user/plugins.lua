@@ -42,11 +42,7 @@ vim.g.vista_executive_for = { cs='nvim_lsp', rs='nvim_lsp' }
 
 -- COQ
 local coq = require("coq")
-local lspconfig = require("lspconfig")
 local _border = "rounded"
-
-vim.g.csharpls_path = "C:\\Users\\maya\\.dotnet\\tools\\csharp-ls.EXE"
-vim.g.netcoredbg = "C:\\Users\\maya\\scoop\\shims\\netcoredbg.EXE"
 
 vim.g.coq_settings = {
     limits={
@@ -104,7 +100,6 @@ require('lsp-overloads').setup({
 })
 
 coq.setup()
--- lspconfig.setup()
 
 vim.lsp.enable('rust_analyzer')
 vim.lsp.enable('csharp_ls')
