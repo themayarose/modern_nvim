@@ -28,11 +28,11 @@ vim.api.nvim_create_autocmd('FileType', {
     end
 })
 
-vim.api.nvim_create_autocmd('VimResized', {
-    pattern = '*',
-    callback = function ()
-        vim.o.ead = 'hor'
-        vim.o.ea = true
-        vim.o.ea = false
-    end
-})
+-- vim.api.nvim_create_autocmd('VimResized', {
+--     pattern = '*',
+--     callback = function ()
+--         vim.o.ead = 'hor'
+--         vim.o.ea = true
+--         vim.o.ea = false
+--     end
+-- })

@@ -44,6 +44,7 @@ vim.keymap.set('t', '<c-right>', '<c-leader><c-n><c-w>l', {silent=true})
 
 vim.keymap.set('n', '<leader>bn', '<cmd>new<cr>', {silent=true})
 vim.keymap.set('n', '<leader>bw', '<cmd>bp<cr><cmd>bw #<cr>', {silent=true})
+vim.keymap.set('n', '<leader>w', '<cmd>bp<cr><cmd>bw #<cr>', {silent=true})
 vim.keymap.set('n', '<leader>bs', '<cmd>b #<cr>', {silent=true})
 vim.keymap.set('n', '<leader>=', '<cmd>bn<cr>', {silent=true})
 vim.keymap.set('n', '<leader>-', '<cmd>bp<cr>', {silent=true})
@@ -68,9 +69,9 @@ vim.keymap.set('n', '<S-Tab>', '<<', {silent=true})
 -- Easymotion
 vim.keymap.set({'n'}, '<leader>f', '<Plug>(easymotion-overwin-f)')
 vim.keymap.set({'n'}, '<leader>2', '<Plug>(easymotion-overwin-f2)')
-vim.keymap.set({'n'}, '<leader>w', '<Plug>(easymotion-overwin-w)')
-vim.keymap.set({'n'}, '<leader>l', '<Plug>(easymotion-overwin-line)')
-vim.keymap.set({'n'}, '<leader>t', '<Plug>(easymotion-bd-t)')
+vim.keymap.set({'n'}, '<leader>mw', '<Plug>(easymotion-overwin-w)')
+vim.keymap.set({'n'}, '<leader>ml', '<Plug>(easymotion-overwin-line)')
+vim.keymap.set({'n'}, '<leader>mt', '<Plug>(easymotion-bd-t)')
 
 -- Completion
 
