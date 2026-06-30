@@ -47,14 +47,17 @@ local _border = "rounded"
 vim.g.coq_settings = {
     limits={
        idle_timeout=0.1,
-       completion_auto_timeout=1.5,
-       completion_manual_timeout=2.5,
+       completion_auto_timeout=3.5,
+       completion_manual_timeout=6.5,
     },
     clients={
-       ['lsp.always_on_top']={},
-       ["tmux.enabled"]=false,
-       ['buffers.enabled']=false,
-       ["registers.enabled"]=false,
+        ['lsp.resolve_timeout'] = 3.5,
+        ['lsp.always_on_top']={},
+        ["tmux.enabled"]=false,
+        ['buffers.weight_adjust']=-2.0,
+        ['lsp.weight_adjust']=2.0,
+        ["registers.enabled"]=false,
+        -- ['buffers.enabled']=false,
     },
 }
 
@@ -84,7 +87,8 @@ vim.lsp.config('csharp_ls', {
 })
 
 vim.lsp.config('rust_analyzer', {
-    ['rust-analyzer.diagnostics.enable'] = true
+    ['rust-analyzer'] = { diagnostics = { enable = true } },
+    ['rust_analyzer'] = { diagnostics = { enable = true } }
 })
 
 require("csharpls_extended").buf_read_cmd_bind()
