@@ -7,6 +7,7 @@ vim.pack.add({
     'https://github.com/neovim/nvim-lspconfig',
     'https://github.com/Decodetalkers/csharpls-extended-lsp.nvim',
     'https://github.com/Issafalcon/lsp-overloads.nvim',
+    'https://github.com/seblyng/roslyn.nvim',
     'https://github.com/neomake/neomake',
     'https://codeberg.org/mfussenegger/nvim-dap.git',
     'https://github.com/rcarriga/nvim-dap-ui',
@@ -30,32 +31,31 @@ vim.pack.add({
 
 -- Airline
 vim.g['airline#extensions#tabline#enabled'] = 1
-vim.g['airline#extensions#tabline#buffer_nr_show'] = 1
+vim.g['airline#extensions#tabline#buffer_nr_show'] = 0
 vim.g['airline#extensions#tabline#show_buffers'] = 2
-vim.g['airline#extensions#tabline#ignore_bufadd_pat'] = '!|defx|gundo|nerd_tree|startify|tagbar|undotree|vimfiler'
+vim.g['airline#extensions#tabline#ignore_bufadd_pat'] = '!|defx|gundo|nerd_tree|startify|tagbar|undotree|vimfiler|term'
 
 -- FZF
 vim.g.fzf_action = { ['ctrl-x']='split', ['ctrl-v']='vsplit' }
 
 -- Vista
-vim.g.vista_executive_for = { cs='nvim_lsp', rs='nvim_lsp' }
+vim.g.vista_executive_for = { razor='nvim_lsp', cs='nvim_lsp', rs='nvim_lsp', css='nvim_lsp', sass='nvim_lsp', less='nvim_lsp' }
 
 -- COQ
 local coq = require("coq")
 local _border = "rounded"
 
 vim.g.coq_settings = {
-    limits={
-       idle_timeout=0.1,
-       completion_auto_timeout=3.5,
-       completion_manual_timeout=6.5,
-    },
+    limits={ idle_timeout=0.1, },
     clients={
-        ['lsp.resolve_timeout'] = 3.5,
+        ['lsp.resolve_timeout'] = 4.5,
         ['lsp.always_on_top']={},
-        ["tmux.enabled"]=false,
         ['buffers.weight_adjust']=-2.0,
         ['lsp.weight_adjust']=2.0,
+
+        ["tmux.enabled"]=false,
+        ["treesitter.enabled"]=false,
+        ["tags.enabled"]=false,
         ["registers.enabled"]=false,
         -- ['buffers.enabled']=false,
     },
@@ -69,7 +69,7 @@ vim.diagnostic.config({
 
 vim.lsp.config('csharp_ls', {
     cmd = { vim.g.csharpls_path, "-l", "info" },
-    filetypes = { "cs" },
+    filetypes = { "cs", "razor" },
     enable_editorconfig_support = true,
     enable_ms_build_load_projects_on_demand = true,
     enable_roslyn_analyzers = true,
@@ -77,6 +77,12 @@ vim.lsp.config('csharp_ls', {
     enable_import_completion = true,
     sdk_include_prereleases = true,
     analyze_open_documents_only = false,
+    settings = {
+        csharp = {
+            useMetadataUris = true,
+            razorSupport = true,
+        },
+    },
     root_dir =
         vim.fs.root(
             0,
@@ -86,28 +92,71 @@ vim.lsp.config('csharp_ls', {
         ),
 })
 
-vim.lsp.config('rust_analyzer', {
-    ['rust-analyzer'] = { diagnostics = { enable = true } },
-    ['rust_analyzer'] = { diagnostics = { enable = true } }
+vim.lsp.config('roslyn', {
+    filetypes = { "cs", "razor" },
+    enable_editorconfig_support = true,
+    enable_ms_build_load_projects_on_demand = true,
+    enable_roslyn_analyzers = true,
+    organize_imports_on_format = true,
+    enable_import_completion = true,
+    sdk_include_prereleases = true,
+    analyze_open_documents_only = false,
+    root_dir = vim.fs.root(
+        0,
+        function (name, path)
+            return name:match('%.slnx?$') ~= nil
+        end
+    ),
+    settings = {
+        -- ['csharp|background_analysis'] = {
+        --     dotnet_analyzer_diagnostics_scope = 'fullSolution',
+        --     dotnet_compiler_diagnostics_scope = 'fullSolution',
+        -- },
+        ['csharp|completion'] = {
+            dotnet_provide_regex_completions = true,
+            dotnet_show_completion_items_from_unimported_namespaces = true,
+            dotnet_show_name_completion_suggestions = true,
+        },
+        ['csharp|symbol_search'] = {
+            dotnet_search_reference_assemblies = true,
+        },
+        ['csharp|formatting'] = {
+            dotnet_organize_imports_on_format = true,
+        }
+    }
 })
 
-require("csharpls_extended").buf_read_cmd_bind()
+vim.lsp.config('rust_analyzer', {
+    ['rust_analyzer'] = { diagnostics = { enable = true } },
+})
+
+vim.lsp.config('tailwindcss', {
+    filetypes = { 'css', 'less', 'sass' },
+    workspace_required = false,
+})
+
+vim.lsp.config('html', {
+    filetypes = { 'html', 'razor' }
+})
+
+local csls_ext = require("csharpls_extended")
+
+csls_ext.buf_read_cmd_bind()
 
 require('lsp-overloads').setup({
-    ui = {
-        border = _border
-    },
-    keymaps = {
-        close_signature = "<esc>"
-    },
+    ui = { border = _border },
+    keymaps = { close_signature = "<esc>" },
     display_automatically = false
 })
 
 coq.setup()
 
 vim.lsp.enable('rust_analyzer')
-vim.lsp.enable('csharp_ls')
+-- vim.lsp.enable('csharp_ls')
+vim.lsp.enable('roslyn')
 vim.lsp.enable('lua_ls')
+vim.lsp.enable('html')
+vim.lsp.enable('tailwindcss')
 
 -- DAP
 

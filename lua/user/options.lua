@@ -37,3 +37,5 @@ vim.o.splitbelow = true
 vim.o.signcolumn = 'auto'
 vim.o.updatetime = 1
 vim.o.winborder = 'rounded'
+vim.o.autocompletetimeout = 0
+vim.o.completetimeout = 0

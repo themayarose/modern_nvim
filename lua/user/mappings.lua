@@ -50,6 +50,7 @@ vim.keymap.set('n', '<leader>bg', function() return '<cmd>b ' .. vim.v.count .. 
 vim.keymap.set('n', '<F2>', '<cmd>Vista !!<cr><c-w><c-p>', {silent=true})
 vim.keymap.set('n', '<leader>0',  '<cmd>Vista finder<cr>', {silent=true})
 vim.keymap.set('n', '<leader>pf', '<cmd>Files<cr>', {silent=true})
+vim.keymap.set('n', '<leader>pg', '<cmd>GFiles<cr>', {silent=true})
 vim.keymap.set('n', '<leader>bf', '<cmd>Buffers<cr>', {silent=true})
 
 
