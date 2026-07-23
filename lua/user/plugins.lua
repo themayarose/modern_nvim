@@ -7,7 +7,7 @@ vim.pack.add({
     'https://github.com/neovim/nvim-lspconfig',
     'https://github.com/Decodetalkers/csharpls-extended-lsp.nvim',
     'https://github.com/Issafalcon/lsp-overloads.nvim',
-    'https://github.com/seblyng/roslyn.nvim',
+    -- 'https://github.com/seblyng/roslyn.nvim',
     'https://github.com/neomake/neomake',
     'https://codeberg.org/mfussenegger/nvim-dap.git',
     'https://github.com/rcarriga/nvim-dap-ui',
@@ -39,7 +39,7 @@ vim.g['airline#extensions#tabline#ignore_bufadd_pat'] = '!|defx|gundo|nerd_tree|
 vim.g.fzf_action = { ['ctrl-x']='split', ['ctrl-v']='vsplit' }
 
 -- Vista
-vim.g.vista_executive_for = { razor='nvim_lsp', cs='nvim_lsp', rs='nvim_lsp', css='nvim_lsp', sass='nvim_lsp', less='nvim_lsp' }
+vim.g.vista_executive_for = { xml='nvim_lsp', razor='nvim_lsp', cs='nvim_lsp', rs='nvim_lsp', css='nvim_lsp', sass='nvim_lsp', less='nvim_lsp' }
 
 -- COQ
 local coq = require("coq")
@@ -69,7 +69,7 @@ vim.diagnostic.config({
 
 vim.lsp.config('csharp_ls', {
     cmd = { vim.g.csharpls_path, "-l", "info" },
-    filetypes = { "cs", "razor" },
+    filetypes = { "cs", "razor", "xml" },
     enable_editorconfig_support = true,
     enable_ms_build_load_projects_on_demand = true,
     enable_roslyn_analyzers = true,
@@ -92,39 +92,39 @@ vim.lsp.config('csharp_ls', {
         ),
 })
 
-vim.lsp.config('roslyn', {
-    filetypes = { "cs", "razor" },
-    enable_editorconfig_support = true,
-    enable_ms_build_load_projects_on_demand = true,
-    enable_roslyn_analyzers = true,
-    organize_imports_on_format = true,
-    enable_import_completion = true,
-    sdk_include_prereleases = true,
-    analyze_open_documents_only = false,
-    root_dir = vim.fs.root(
-        0,
-        function (name, path)
-            return name:match('%.slnx?$') ~= nil
-        end
-    ),
-    settings = {
-        -- ['csharp|background_analysis'] = {
-        --     dotnet_analyzer_diagnostics_scope = 'fullSolution',
-        --     dotnet_compiler_diagnostics_scope = 'fullSolution',
-        -- },
-        ['csharp|completion'] = {
-            dotnet_provide_regex_completions = true,
-            dotnet_show_completion_items_from_unimported_namespaces = true,
-            dotnet_show_name_completion_suggestions = true,
-        },
-        ['csharp|symbol_search'] = {
-            dotnet_search_reference_assemblies = true,
-        },
-        ['csharp|formatting'] = {
-            dotnet_organize_imports_on_format = true,
-        }
-    }
-})
+-- vim.lsp.config('roslyn', {
+--     filetypes = { "cs", "razor", "xml" },
+--     enable_editorconfig_support = true,
+--     enable_ms_build_load_projects_on_demand = true,
+--     enable_roslyn_analyzers = true,
+--     organize_imports_on_format = true,
+--     enable_import_completion = true,
+--     sdk_include_prereleases = true,
+--     analyze_open_documents_only = false,
+--     root_dir = vim.fs.root(
+--         0,
+--         function (name, path)
+--             return name:match('%.slnx?$') ~= nil
+--         end
+--     ),
+--     settings = {
+--         -- ['csharp|background_analysis'] = {
+--         --     dotnet_analyzer_diagnostics_scope = 'fullSolution',
+--         --     dotnet_compiler_diagnostics_scope = 'fullSolution',
+--         -- },
+--         ['csharp|completion'] = {
+--             dotnet_provide_regex_completions = true,
+--             dotnet_show_completion_items_from_unimported_namespaces = true,
+--             dotnet_show_name_completion_suggestions = true,
+--         },
+--         ['csharp|symbol_search'] = {
+--             dotnet_search_reference_assemblies = true,
+--         },
+--         ['csharp|formatting'] = {
+--             dotnet_organize_imports_on_format = true,
+--         }
+--     }
+-- })
 
 vim.lsp.config('rust_analyzer', {
     ['rust_analyzer'] = { diagnostics = { enable = true } },
@@ -152,8 +152,8 @@ require('lsp-overloads').setup({
 coq.setup()
 
 vim.lsp.enable('rust_analyzer')
--- vim.lsp.enable('csharp_ls')
-vim.lsp.enable('roslyn')
+vim.lsp.enable('csharp_ls')
+-- vim.lsp.enable('roslyn')
 vim.lsp.enable('lua_ls')
 vim.lsp.enable('html')
 vim.lsp.enable('tailwindcss')
