@@ -39,3 +39,4 @@ vim.o.updatetime = 1
 vim.o.winborder = 'rounded'
 vim.o.autocompletetimeout = 0
 vim.o.completetimeout = 0
+vim.o.showtabline = 2

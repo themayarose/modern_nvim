@@ -1,21 +1,21 @@
+local dotnet_analyzer = "roslyn" -- "roslyn" | "csharp_ls"
+local completion_engine = "nvim-cmp" -- "nvim-cmp" | "coq_nvim"
+
 vim.pack.add({
-    'https://github.com/morhetz/gruvbox',
-    'https://github.com/vim-airline/vim-airline',
+    'https://github.com/ellisonleao/gruvbox.nvim',
+    'https://github.com/nvim-tree/nvim-web-devicons',
+    'https://github.com/nvim-lualine/lualine.nvim',
     'https://github.com/junegunn/fzf',
     'https://github.com/junegunn/fzf.vim',
     'https://github.com/liuchengxu/vista.vim',
     'https://github.com/neovim/nvim-lspconfig',
     'https://github.com/Decodetalkers/csharpls-extended-lsp.nvim',
     'https://github.com/Issafalcon/lsp-overloads.nvim',
-    -- 'https://github.com/seblyng/roslyn.nvim',
     'https://github.com/neomake/neomake',
     'https://codeberg.org/mfussenegger/nvim-dap.git',
     'https://github.com/rcarriga/nvim-dap-ui',
     'https://github.com/nvim-neotest/nvim-nio',
     'https://github.com/theHamsta/nvim-dap-virtual-text',
-    { src='https://github.com/ms-jpq/coq_nvim', version='coq' },
-    { src='https://github.com/ms-jpq/coq.artifacts', version='artifacts' },
-    { src='https://github.com/ms-jpq/coq.thirdparty', version='3p' },
     'https://github.com/Raimondi/delimitMate',
     'https://github.com/tpope/vim-surround',
     'https://github.com/tpope/vim-commentary',
@@ -29,11 +29,29 @@ vim.pack.add({
     'https://github.com/ncm2/float-preview.nvim',
 })
 
--- Airline
-vim.g['airline#extensions#tabline#enabled'] = 1
-vim.g['airline#extensions#tabline#buffer_nr_show'] = 0
-vim.g['airline#extensions#tabline#show_buffers'] = 2
-vim.g['airline#extensions#tabline#ignore_bufadd_pat'] = '!|defx|gundo|nerd_tree|startify|tagbar|undotree|vimfiler|term'
+if dotnet_analyzer == "roslyn" then
+    vim.pack.add({'https://github.com/seblyng/roslyn.nvim'})
+end
+
+if completion_engine == "nvim-cmp" then
+    vim.pack.add({
+        'https://github.com/hrsh7th/cmp-nvim-lsp',
+        'https://github.com/hrsh7th/cmp-buffer',
+        'https://github.com/hrsh7th/cmp-path',
+        'https://github.com/hrsh7th/nvim-cmp',
+        'https://github.com/onsails/lspkind.nvim',
+    })
+elseif completion_engine == "coq_nvim" then
+    vim.pack.add({
+        { src='https://github.com/ms-jpq/coq_nvim', version='coq' },
+        { src='https://github.com/ms-jpq/coq.artifacts', version='artifacts' },
+        { src='https://github.com/ms-jpq/coq.thirdparty', version='3p' },
+    })
+end
+
+
+-- Lualine
+
 
 -- FZF
 vim.g.fzf_action = { ['ctrl-x']='split', ['ctrl-v']='vsplit' }
@@ -41,25 +59,107 @@ vim.g.fzf_action = { ['ctrl-x']='split', ['ctrl-v']='vsplit' }
 -- Vista
 vim.g.vista_executive_for = { xml='nvim_lsp', razor='nvim_lsp', cs='nvim_lsp', rs='nvim_lsp', css='nvim_lsp', sass='nvim_lsp', less='nvim_lsp' }
 
--- COQ
-local coq = require("coq")
-local _border = "rounded"
+-- Completion
+local completion
+local config_lsp
 
-vim.g.coq_settings = {
-    limits={ idle_timeout=0.1, },
-    clients={
-        ['lsp.resolve_timeout'] = 4.5,
-        ['lsp.always_on_top']={},
-        ['buffers.weight_adjust']=-2.0,
-        ['lsp.weight_adjust']=2.0,
+if completion_engine == "coq_nvim" then
+    completion = require("coq")
 
-        ["tmux.enabled"]=false,
-        ["treesitter.enabled"]=false,
-        ["tags.enabled"]=false,
-        ["registers.enabled"]=false,
-        -- ['buffers.enabled']=false,
-    },
-}
+    vim.g.coq_settings = {
+        limits={ idle_timeout=0.1, },
+        clients={
+            ['lsp.resolve_timeout'] = 4.5,
+            ['lsp.always_on_top']={},
+            ['buffers.weight_adjust']=-2.0,
+            ['lsp.weight_adjust']=2.0,
+
+            ["tmux.enabled"]=false,
+            ["treesitter.enabled"]=false,
+            ["tags.enabled"]=false,
+            ["registers.enabled"]=false,
+            -- ['buffers.enabled']=false,
+        },
+    }
+
+    config_lsp = function (server, config)
+        vim.lsp.config(server, config)
+    end
+elseif completion_engine == "nvim-cmp" then
+    completion = require("cmp")
+    local lspkind = require("lspkind")
+
+    local has_words_before = function()
+        unpack = unpack or table.unpack
+        local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+        return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match('%s') == nil
+    end
+
+    completion.setup({
+        snippet = {
+            expand = function(args) vim.snippet.expand(args.body) end
+        },
+        window = {
+            completion = completion.config.window.bordered(),
+            documentation = completion.config.window.bordered(),
+        },
+        mapping = completion.mapping.preset.insert({
+            ['<C-b>'] = completion.mapping.scroll_docs(-4),
+            ['<C-f>'] = completion.mapping.scroll_docs(4),
+            ['<C-Space>'] = completion.mapping.complete(),
+            ['<Esc>'] = completion.mapping.abort(),
+            ['<CR>'] = completion.mapping.confirm({ select = true }),
+            ['<Tab>'] = function (fallback)
+                if not completion.select_next_item() then
+                    if vim.bo.buftype ~= 'prompt' and has_words_before() then
+                        completion.complete()
+                    else
+                        fallback()
+                    end
+                end
+            end,
+            ['<S-Tab>'] = function (fallback)
+                if not completion.select_prev_item() then
+                    if vim.bo.buftype ~= 'prompt' and has_words_before() then
+                        completion.complete()
+                    else
+                        fallback()
+                    end
+                end
+            end,
+            ['<C-Tab'] = completion.mapping.confirm({
+                behavior = completion.ConfirmBehavior.Insert,
+                select = true,
+            })
+        }),
+        sources = completion.config.sources({
+            { name = 'nvim_lsp' },
+            { name = 'buffer' },
+            { name = 'path' },
+        }),
+        formatting = {
+            format = lspkind.cmp_format({
+                mode = "symbol_text",
+                menu = ({
+                    buffer = "[BUF]",
+                    nvim_lsp = "[LSP]",
+                    path = "[PTH]",
+                })
+            }),
+        },
+        view = {
+            entries = "custom"
+        },
+    })
+
+    config_lsp = function (server, config)
+        local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+        config["capabilities"] = capabilities
+
+        vim.lsp.enable(server, config)
+    end
+end
 
 vim.diagnostic.config({
     signs = { severity = { min = vim.diagnostic.severity.WARN } },
@@ -67,75 +167,77 @@ vim.diagnostic.config({
 })
 
 
-vim.lsp.config('csharp_ls', {
-    cmd = { vim.g.csharpls_path, "-l", "info" },
-    filetypes = { "cs", "razor", "xml" },
-    enable_editorconfig_support = true,
-    enable_ms_build_load_projects_on_demand = true,
-    enable_roslyn_analyzers = true,
-    organize_imports_on_format = true,
-    enable_import_completion = true,
-    sdk_include_prereleases = true,
-    analyze_open_documents_only = false,
-    settings = {
-        csharp = {
-            useMetadataUris = true,
-            razorSupport = true,
+if dotnet_analyzer == "csharp_ls" then
+    config_lsp('csharp_ls', {
+        cmd = { vim.g.csharpls_path, "-l", "info" },
+        filetypes = { "cs", "razor", "xml" },
+        enable_editorconfig_support = true,
+        enable_ms_build_load_projects_on_demand = true,
+        enable_roslyn_analyzers = true,
+        organize_imports_on_format = true,
+        enable_import_completion = true,
+        sdk_include_prereleases = true,
+        analyze_open_documents_only = false,
+        settings = {
+            csharp = {
+                useMetadataUris = true,
+                razorSupport = true,
+            },
         },
-    },
-    root_dir =
-        vim.fs.root(
+        root_dir =
+            vim.fs.root(
+                0,
+                function (name, path)
+                    return name:match('%.slnx?$') ~= nil
+                end
+            ),
+    })
+elseif dotnet_analyzer == "roslyn" then
+    config_lsp('roslyn', {
+        filetypes = { "cs", "razor", "xml" },
+        enable_editorconfig_support = true,
+        enable_ms_build_load_projects_on_demand = true,
+        enable_roslyn_analyzers = true,
+        organize_imports_on_format = true,
+        enable_import_completion = true,
+        sdk_include_prereleases = true,
+        analyze_open_documents_only = false,
+        root_dir = vim.fs.root(
             0,
             function (name, path)
                 return name:match('%.slnx?$') ~= nil
             end
         ),
-})
+        settings = {
+            -- ['csharp|background_analysis'] = {
+            --     dotnet_analyzer_diagnostics_scope = 'fullSolution',
+            --     dotnet_compiler_diagnostics_scope = 'fullSolution',
+            -- },
+            ['csharp|completion'] = {
+                dotnet_provide_regex_completions = true,
+                dotnet_show_completion_items_from_unimported_namespaces = true,
+                dotnet_show_name_completion_suggestions = true,
+            },
+            ['csharp|symbol_search'] = {
+                dotnet_search_reference_assemblies = true,
+            },
+            ['csharp|formatting'] = {
+                dotnet_organize_imports_on_format = true,
+            }
+        }
+    })
+end
 
--- vim.lsp.config('roslyn', {
---     filetypes = { "cs", "razor", "xml" },
---     enable_editorconfig_support = true,
---     enable_ms_build_load_projects_on_demand = true,
---     enable_roslyn_analyzers = true,
---     organize_imports_on_format = true,
---     enable_import_completion = true,
---     sdk_include_prereleases = true,
---     analyze_open_documents_only = false,
---     root_dir = vim.fs.root(
---         0,
---         function (name, path)
---             return name:match('%.slnx?$') ~= nil
---         end
---     ),
---     settings = {
---         -- ['csharp|background_analysis'] = {
---         --     dotnet_analyzer_diagnostics_scope = 'fullSolution',
---         --     dotnet_compiler_diagnostics_scope = 'fullSolution',
---         -- },
---         ['csharp|completion'] = {
---             dotnet_provide_regex_completions = true,
---             dotnet_show_completion_items_from_unimported_namespaces = true,
---             dotnet_show_name_completion_suggestions = true,
---         },
---         ['csharp|symbol_search'] = {
---             dotnet_search_reference_assemblies = true,
---         },
---         ['csharp|formatting'] = {
---             dotnet_organize_imports_on_format = true,
---         }
---     }
--- })
-
-vim.lsp.config('rust_analyzer', {
+config_lsp('rust_analyzer', {
     ['rust_analyzer'] = { diagnostics = { enable = true } },
 })
 
-vim.lsp.config('tailwindcss', {
+config_lsp('tailwindcss', {
     filetypes = { 'css', 'less', 'sass' },
     workspace_required = false,
 })
 
-vim.lsp.config('html', {
+config_lsp('html', {
     filetypes = { 'html', 'razor' }
 })
 
@@ -144,16 +246,23 @@ local csls_ext = require("csharpls_extended")
 csls_ext.buf_read_cmd_bind()
 
 require('lsp-overloads').setup({
-    ui = { border = _border },
+    ui = { border = "rounded" },
     keymaps = { close_signature = "<esc>" },
     display_automatically = false
 })
 
-coq.setup()
+if completion_engine == "coq_nvim" then
+    completion.setup()
+end
 
 vim.lsp.enable('rust_analyzer')
-vim.lsp.enable('csharp_ls')
--- vim.lsp.enable('roslyn')
+
+if dotnet_analyzer == "csharp_ls" then
+    vim.lsp.enable('csharp_ls')
+elseif dotnet_analyzer == "roslyn" then
+    vim.lsp.enable('roslyn')
+end
+
 vim.lsp.enable('lua_ls')
 vim.lsp.enable('html')
 vim.lsp.enable('tailwindcss')
@@ -259,55 +368,89 @@ vim.g.neomake_restore_maker = {
     errorformat='%f:%l:%c: %m',
 }
 
-vim.cmd([[
-    let s:spinner_index = 0
-    let s:active_spinners = 0
+require('gruvbox').setup({
+    terminal_colors = true,
+    undercurl = true,
+    underline = true,
+    bold = true,
+    italic = {
+        strings = true,
+        emphasis = true,
+        comments = true,
+        operators = true,
+        folds = false,
+    },
+    strikethrough = true,
+    transparent_mode = true,
+})
 
-    " let s:spinner_states = ['|', '/', '--', '\', '|', '/', '--', '\']
-    " let s:spinner_states = ['┤', '┘', '┴', '└', '├', '┌', '┬', '┐']
-    " let s:spinner_states = ['←', '↑', '→', '↓']
-    " let s:spinner_states = ['d', 'q', 'p', 'b']
-    " let s:spinner_states = ['.', 'o', 'O', '°', 'O', 'o', '.']
-    " let s:spinner_states = ['■', '□', '▪', '▫', '▪', '□', '■']
+local lualine = require('lualine')
 
-    let s:spinner_states = ['←', '↖', '↑', '↗', '→', '↘', '↓', '↙']
+lualine.setup({
+    options = {
+        icons_enabled = false,
+        always_show_tabline = true,
+        globalstatus = true,
+    },
+    tabline = {
+        lualine_a = {
+            {
+                'buffers',
+                show_filename_only = false,
+            }
+        },
+    },
+})
 
-    function! StartSpinner()
-        let b:show_spinner = 1
-        let s:active_spinners += 1
-        if s:active_spinners == 1
-            let s:spinner_timer = timer_start(1000 / len(s:spinner_states), 'SpinSpinner', {'repeat': -1})
-        endif
-    endfunction
+-- vim.cmd([[
+--     let s:spinner_index = 0
+--     let s:active_spinners = 0
 
-    function! StopSpinner()
-        let b:show_spinner = 0
-        let s:active_spinners -= 1
-        if s:active_spinners == 0
-            :call timer_stop(s:spinner_timer)
-        endif
-    endfunction
+--     " let s:spinner_states = ['|', '/', '--', '\', '|', '/', '--', '\']
+--     " let s:spinner_states = ['┤', '┘', '┴', '└', '├', '┌', '┬', '┐']
+--     " let s:spinner_states = ['←', '↑', '→', '↓']
+--     " let s:spinner_states = ['d', 'q', 'p', 'b']
+--     " let s:spinner_states = ['.', 'o', 'O', '°', 'O', 'o', '.']
+--     " let s:spinner_states = ['■', '□', '▪', '▫', '▪', '□', '■']
 
-    function! SpinSpinner(timer)
-        let s:spinner_index = float2nr(fmod(s:spinner_index + 1, len(s:spinner_states)))
-        redraw!
-    endfunction
+--     let s:spinner_states = ['←', '↖', '↑', '↗', '→', '↘', '↓', '↙']
 
-    function! SpinnerText()
-        if get(b:, 'show_spinner', 0) == 0
-            return " "
-        endif
+--     function! StartSpinner()
+--         let b:show_spinner = 1
+--         let s:active_spinners += 1
+--         if s:active_spinners == 1
+--             let s:spinner_timer = timer_start(1000 / len(s:spinner_states), 'SpinSpinner', {'repeat': -1})
+--         endif
+--     endfunction
 
-        return s:spinner_states[s:spinner_index]
-    endfunction
+--     function! StopSpinner()
+--         let b:show_spinner = 0
+--         let s:active_spinners -= 1
+--         if s:active_spinners == 0
+--             :call timer_stop(s:spinner_timer)
+--         endif
+--     endfunction
 
-    augroup neomake_hooks
-        au!
-        autocmd User NeomakeJobInit :call StartSpinner()
-        autocmd User NeomakeFinished :call StopSpinner()
-    augroup END
+--     function! SpinSpinner(timer)
+--         let s:spinner_index = float2nr(fmod(s:spinner_index + 1, len(s:spinner_states)))
+--         redraw!
+--     endfunction
 
-    call airline#parts#define_function('neomake','SpinnerText')
+--     function! SpinnerText()
+--         if get(b:, 'show_spinner', 0) == 0
+--             return " "
+--         endif
 
-    let g:airline_section_x = airline#section#create_right(['coc_current_function', 'bookmark', 'scrollbar', 'tagbar', 'taglist', 'vista', 'gutentags', 'neomake', 'gen_tags', 'omnisharp', 'grepper', 'codeium', 'filetype'])
-]])
+--         return s:spinner_states[s:spinner_index]
+--     endfunction
+
+--     augroup neomake_hooks
+--         au!
+--         autocmd User NeomakeJobInit :call StartSpinner()
+--         autocmd User NeomakeFinished :call StopSpinner()
+--     augroup END
+
+--     call airline#parts#define_function('neomake','SpinnerText')
+
+--     let g:airline_section_x = airline#section#create_right(['coc_current_function', 'bookmark', 'scrollbar', 'tagbar', 'taglist', 'vista', 'gutentags', 'neomake', 'gen_tags', 'omnisharp', 'grepper', 'codeium', 'filetype'])
+-- ]])
