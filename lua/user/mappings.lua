@@ -72,15 +72,17 @@ vim.keymap.set({'n'}, '<leader>mt', '<Plug>(easymotion-bd-t)')
 
 -- Completion
 
-vim.keymap.set({'x', 'n', 'v'}, '<leader>/', '<cmd>lua vim.lsp.buf.hover()<cr>', {silent=true})
-vim.keymap.set({'i', 'n'}, '<C-_>', '<cmd>LspOverloads signature<cr>', {silent=true})
+vim.keymap.set({'x', 'n', 'v'}, '<leader>/', function() vim.lsp.buf.hover() end, {silent=true})
+vim.keymap.set({'i', 'n'}, '<C-_>', function() vim.lsp.buf.signature_help() end, {silent=true})
 
-vim.keymap.set('n', '<leader>ld', '<cmd>lua vim.lsp.buf.definition()<cr>', {silent=true})
-vim.keymap.set('n', '<leader>li', '<cmd>lua vim.lsp.buf.implementation()<cr>', {silent=true})
-vim.keymap.set('n', '<leader>la', '<cmd>lua vim.lsp.buf.code_action()<cr>', {silent=true})
-vim.keymap.set('n', '<leader>lr', '<cmd>lua vim.lsp.buf.references()<cr>', {silent=true})
-vim.keymap.set('n', '<leader>le', '<cmd>lua vim.diagnostic.open_float()<cr>', {silent=true})
-vim.keymap.set('n', '<leader>ln', '<cmd>lua vim.lsp.buf.rename()<cr>', {silent=true})
+vim.keymap.set('n', '<leader>ld', function() vim.lsp.buf.definition() end, {silent=true})
+vim.keymap.set('n', '<leader>li', function() vim.lsp.buf.implementation() end, {silent=true})
+vim.keymap.set('n', '<leader>la', function() vim.lsp.buf.code_action() end, {silent=true})
+vim.keymap.set('n', '<leader>lr', function() vim.lsp.buf.references() end, {silent=true})
+vim.keymap.set('n', '<leader>le', function() vim.diagnostic.open_float() end, {silent=true})
+vim.keymap.set('n', '<leader>ln', function() vim.lsp.buf.rename() end, {silent=true})
+vim.keymap.set('n', '<leader>l]', function() vim.diagnostic.jump({diagnostic=vim.diagnostic.get_next()}) end, {silent=true})
+vim.keymap.set('n', '<leader>l[', function() vim.diagnostic.jump({diagnostic=vim.diagnostic.get_prev()}) end, {silent=true})
 
 vim.keymap.set('n', '<leader>dr', function() require('dap').continue() end)
 vim.keymap.set('n', '<F10>', function() require('dap').step_over() end)
