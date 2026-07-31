@@ -127,7 +127,7 @@ elseif completion_engine == "nvim-cmp" then
                     end
                 end
             end,
-            ['<C-Tab'] = completion.mapping.confirm({
+            ['<C-Tab>'] = completion.mapping.confirm({
                 behavior = completion.ConfirmBehavior.Insert,
                 select = true,
             })
