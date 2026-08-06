@@ -2,6 +2,7 @@ local dotnet_analyzer = "roslyn" -- "roslyn" | "csharp_ls"
 local completion_engine = "nvim-cmp" -- "nvim-cmp" | "coq_nvim"
 
 vim.pack.add({
+    'https://github.com/kmiterror/dotnet-debug.nvim',
     'https://github.com/ellisonleao/gruvbox.nvim',
     'https://github.com/nvim-tree/nvim-web-devicons',
     'https://github.com/nvim-lualine/lualine.nvim',
@@ -279,46 +280,56 @@ ui.setup()
 
 vim.fn.sign_define("DapBreakpoint", { text = "🐞" })
 
-dap.adapters.coreclr = function(cb, config)
-    local path = vim.fn.getcwd() .. "\\netcoredbg.file.txt"
-    local file = io.open(path)
-    if not file then return nil end
-    local program = file:read("*a"):gsub("\n[^\n]*$", "")
-    file:close()
-    print(program)
-    cb({
-        type = 'executable',
-        command = vim.g.netcoredbg,
-        args = {
-            '--interpreter=vscode',
-            '--',
-            program
+if vim.g.dotnet_debugger == "netcoredbg" then
+    dap.adapters.coreclr = function(cb, config)
+        local path = vim.fn.getcwd() .. "\\netcoredbg.file.txt"
+        local file = io.open(path)
+        if not file then return nil end
+        local program = file:read("*a"):gsub("\n[^\n]*$", "")
+        file:close()
+        print(program)
+        cb({
+            type = 'executable',
+            command = vim.g.netcoredbg,
+            args = {
+                '--interpreter=vscode',
+                '--',
+                program
+            },
+            options = {
+                detached = false
+            },
+        })
+    end
+
+    dap.configurations.cs = {
+        {
+            type = "coreclr",
+            name = "netcoredbg",
+            request = "launch",
+            program = "",
+            args = {},
+            justMyCode = false,
+            stopAtEntry = false,
+            console = "integratedTerminal",
+            logging = {
+                moduleLoad = false,
+                processExit = false,
+            },
+            cwd = function()
+                return vim.fn.getcwd()
+            end,
         },
-        options = {
-            detached = false
-        },
+    }
+elseif vim.g.dotnet_debugger == "vsdbg" then
+    local signer_path = vim.env.HOME .. "/AppData/Local/Programs/Microsoft VS Code/e4c7e7b1d6/resources/app/node_modules.asar.unpacked/vsda/build/Release/vsda.node"
+    local debugger_path = vim.env.HOME .. "/.vscode/extensions/ms-dotnettools.csharp-2.147.94-win32-x64/.debugger/x86_64/vsdbg-ui.exe"
+
+    require("dotnet-debug").setup({
+        signer_path = signer_path,
+        debugger_path = debugger_path,
     })
 end
-
-dap.configurations.cs = {
-    {
-        type = "coreclr",
-        name = "netcoredbg",
-        request = "launch",
-        program = "",
-        args = {},
-        justMyCode = false,
-        stopAtEntry = false,
-        console = "integratedTerminal",
-        logging = {
-            moduleLoad = false,
-            processExit = false,
-        },
-        cwd = function()
-            return vim.fn.getcwd()
-        end,
-    },
-}
 
 dap.defaults.coreclr.exception_breakpoints = { 'user-unhandled' }
 
