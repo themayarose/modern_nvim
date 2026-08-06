@@ -81,8 +81,8 @@ vim.keymap.set('n', '<leader>la', function() vim.lsp.buf.code_action() end, {sil
 vim.keymap.set('n', '<leader>lr', function() vim.lsp.buf.references() end, {silent=true})
 vim.keymap.set('n', '<leader>le', function() vim.diagnostic.open_float() end, {silent=true})
 vim.keymap.set('n', '<leader>ln', function() vim.lsp.buf.rename() end, {silent=true})
-vim.keymap.set('n', '<leader>l]', function() vim.diagnostic.jump({diagnostic=vim.diagnostic.get_next()}) end, {silent=true})
-vim.keymap.set('n', '<leader>l[', function() vim.diagnostic.jump({diagnostic=vim.diagnostic.get_prev()}) end, {silent=true})
+vim.keymap.set('n', '<leader>]', function() vim.diagnostic.jump({diagnostic=vim.diagnostic.get_next()}) end, {silent=true})
+vim.keymap.set('n', '<leader>[', function() vim.diagnostic.jump({diagnostic=vim.diagnostic.get_prev()}) end, {silent=true})
 
 vim.keymap.set('n', '<leader>dr', function() require('dap').continue() end)
 vim.keymap.set('n', '<F10>', function() require('dap').step_over() end)
