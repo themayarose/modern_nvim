@@ -395,6 +395,72 @@ require('gruvbox').setup({
     transparent_mode = true,
 })
 
+local spinner_index = 0
+-- local spinner_states = ['|', '/', '--', '\', '|', '/', '--', '\']
+-- local spinner_states = ['┤', '┘', '┴', '└', '├', '┌', '┬', '┐']
+-- local spinner_states = ['←', '↑', '→', '↓']
+-- local spinner_states = ['d', 'q', 'p', 'b']
+-- local spinner_states = ['.', 'o', 'O', '°', 'O', 'o', '.']
+-- local spinner_states = ['■', '□', '▪', '▫', '▪', '□', '■']
+local spinner_states = {'←', '↖', '↑', '↗', '→', '↘', '↓', '↙'}
+local active_spinners = 0
+local timer = nil
+
+local function spin_spinner()
+    spinner_index = (spinner_index + 1) % #spinner_states
+    vim.api.nvim__redraw({statusline = true})
+end
+
+local function start_spinner()
+    vim.b.show_spinner = true
+    active_spinners = active_spinners + 1
+
+    if active_spinners == 1 then
+        timer = vim.loop.new_timer()
+        timer:start(0, 1000, vim.schedule_wrap(spin_spinner))
+    end
+end
+
+local function stop_spinner()
+    vim.b.show_spinner = false
+    active_spinners = active_spinners - 1
+
+    if active_spinners == 0 then
+        timer:close()
+        timer = nil
+    end
+end
+
+local function neomake_spinner()
+    if not vim.b.show_spinner then
+        return ""
+    end
+
+    return spinner_states[spinner_index]
+end
+
+local neomake_hooks = vim.api.nvim_create_augroup("neomake_hooks", {clear=true})
+
+vim.api.nvim_create_autocmd("User", {
+    pattern = "NeomakeJobInit",
+    group = neomake_hooks,
+    callback = start_spinner,
+})
+
+vim.api.nvim_create_autocmd("User", {
+    pattern = "NeomakeFinished",
+    group = neomake_hooks,
+    callback = stop_spinner,
+})
+
+vim.api.nvim_create_autocmd('BufReadPost', {
+    pattern = 'quickfix',
+    callback = function ()
+        vim.keymap.set('n', '<cr>', '<cr>', { buf = 0 })
+    end
+})
+
+
 local lualine = require('lualine')
 
 lualine.setup({
@@ -411,57 +477,13 @@ lualine.setup({
             }
         },
     },
+    sections = {
+        lualine_a = {'mode'},
+        lualine_b = {'branch', 'diff', 'diagnostics'},
+        lualine_c = {'filename'},
+        lualine_x = {'encoding', 'fileformat', 'filetype'},
+        lualine_y = {neomake_spinner, 'progress'},
+        lualine_z = {'location'}
+    },
 })
 
--- vim.cmd([[
---     let s:spinner_index = 0
---     let s:active_spinners = 0
-
---     " let s:spinner_states = ['|', '/', '--', '\', '|', '/', '--', '\']
---     " let s:spinner_states = ['┤', '┘', '┴', '└', '├', '┌', '┬', '┐']
---     " let s:spinner_states = ['←', '↑', '→', '↓']
---     " let s:spinner_states = ['d', 'q', 'p', 'b']
---     " let s:spinner_states = ['.', 'o', 'O', '°', 'O', 'o', '.']
---     " let s:spinner_states = ['■', '□', '▪', '▫', '▪', '□', '■']
-
---     let s:spinner_states = ['←', '↖', '↑', '↗', '→', '↘', '↓', '↙']
-
---     function! StartSpinner()
---         let b:show_spinner = 1
---         let s:active_spinners += 1
---         if s:active_spinners == 1
---             let s:spinner_timer = timer_start(1000 / len(s:spinner_states), 'SpinSpinner', {'repeat': -1})
---         endif
---     endfunction
-
---     function! StopSpinner()
---         let b:show_spinner = 0
---         let s:active_spinners -= 1
---         if s:active_spinners == 0
---             :call timer_stop(s:spinner_timer)
---         endif
---     endfunction
-
---     function! SpinSpinner(timer)
---         let s:spinner_index = float2nr(fmod(s:spinner_index + 1, len(s:spinner_states)))
---         redraw!
---     endfunction
-
---     function! SpinnerText()
---         if get(b:, 'show_spinner', 0) == 0
---             return " "
---         endif
-
---         return s:spinner_states[s:spinner_index]
---     endfunction
-
---     augroup neomake_hooks
---         au!
---         autocmd User NeomakeJobInit :call StartSpinner()
---         autocmd User NeomakeFinished :call StopSpinner()
---     augroup END
-
---     call airline#parts#define_function('neomake','SpinnerText')
-
---     let g:airline_section_x = airline#section#create_right(['coc_current_function', 'bookmark', 'scrollbar', 'tagbar', 'taglist', 'vista', 'gutentags', 'neomake', 'gen_tags', 'omnisharp', 'grepper', 'codeium', 'filetype'])
--- ]])
