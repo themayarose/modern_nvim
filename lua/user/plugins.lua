@@ -402,7 +402,7 @@ local spinner_index = 0
 -- local spinner_states = ['d', 'q', 'p', 'b']
 -- local spinner_states = ['.', 'o', 'O', '°', 'O', 'o', '.']
 -- local spinner_states = ['■', '□', '▪', '▫', '▪', '□', '■']
-local spinner_states = {'←', '↖', '↑', '↗', '→', '↘', '↓', '↙'}
+local spinner_states = {'←', '↖', '↑', '↗', '→', '↘', '↓', '↙', nil}
 local active_spinners = 0
 local timer = nil
 
@@ -417,7 +417,9 @@ local function start_spinner()
 
     if active_spinners == 1 then
         timer = vim.loop.new_timer()
-        timer:start(0, 1000, vim.schedule_wrap(spin_spinner))
+        if timer ~= nil then
+            timer:start(0, 1000, vim.schedule_wrap(spin_spinner))
+        end
     end
 end
 
@@ -426,7 +428,9 @@ local function stop_spinner()
     active_spinners = active_spinners - 1
 
     if active_spinners == 0 then
-        timer:close()
+        if timer ~= nil then
+            timer:close()
+        end
         timer = nil
     end
 end
