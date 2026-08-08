@@ -1,5 +1,6 @@
 local dotnet_analyzer = "roslyn" -- "roslyn" | "csharp_ls"
 local completion_engine = "nvim-cmp" -- "nvim-cmp" | "coq_nvim"
+local dotnet_debugger = "vsdbg" -- "vsdbg" | "netcoredbg"
 
 vim.pack.add({
     'https://github.com/kmiterror/dotnet-debug.nvim',
@@ -280,7 +281,7 @@ ui.setup()
 
 vim.fn.sign_define("DapBreakpoint", { text = "🐞" })
 
-if vim.g.dotnet_debugger == "netcoredbg" then
+if dotnet_debugger == "netcoredbg" then
     dap.adapters.coreclr = function(cb, config)
         local path = vim.fn.getcwd() .. "\\netcoredbg.file.txt"
         local file = io.open(path)
@@ -321,14 +322,25 @@ if vim.g.dotnet_debugger == "netcoredbg" then
             end,
         },
     }
-elseif vim.g.dotnet_debugger == "vsdbg" then
-    local signer_path = vim.env.HOME .. "/AppData/Local/Programs/Microsoft VS Code/e4c7e7b1d6/resources/app/node_modules.asar.unpacked/vsda/build/Release/vsda.node"
-    local debugger_path = vim.env.HOME .. "/.vscode/extensions/ms-dotnettools.csharp-2.147.94-win32-x64/.debugger/x86_64/vsdbg-ui.exe"
+elseif dotnet_debugger == "vsdbg" then
+    local vsdbg = require("user.vsdbg_adapter")
 
-    require("dotnet-debug").setup({
-        signer_path = signer_path,
-        debugger_path = debugger_path,
+    dap.adapters.coreclr = vsdbg.extend_adapter({
+        id = "coreclr",
+        type = "executable",
+        command = vim.fn.expand(vim.g.debugger_path),
+        args = {
+            '--interpreter=vscode',
+        },
+        options = {
+            externalTerminal = true,
+        },
+        runInTerminal = true,
     })
+    -- require("dotnet-debug").setup({
+    --     signer_path = vim.g.signer_path,
+    --     debugger_path = vim.g.debugger_path,
+    -- })
 end
 
 dap.defaults.coreclr.exception_breakpoints = { 'user-unhandled' }
