@@ -15,6 +15,7 @@ vim.keymap.set('n', 'q/', '<nop>')
 vim.keymap.set('n', 'q?', '<nop>')
 
 vim.keymap.set('i', 'jj', '<esc>')
+vim.keymap.set('i', '<m-enter>', '<Plug>delimitMateS-Tab')
 
 vim.keymap.set('n', '<leader>a', '<C-w>h', {silent=true})
 vim.keymap.set('n', '<leader>w', '<C-w>k', {silent=true})
