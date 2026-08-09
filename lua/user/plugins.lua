@@ -59,7 +59,15 @@ end
 vim.g.fzf_action = { ['ctrl-x']='split', ['ctrl-v']='vsplit' }
 
 -- Vista
-vim.g.vista_executive_for = { xml='nvim_lsp', razor='nvim_lsp', cs='nvim_lsp', rs='nvim_lsp', css='nvim_lsp', sass='nvim_lsp', less='nvim_lsp' }
+vim.g.vista_executive_for = {
+    xml='nvim_lsp',
+    razor='nvim_lsp',
+    cs='nvim_lsp',
+    rs='nvim_lsp',
+    css='nvim_lsp',
+    sass='nvim_lsp',
+    less='nvim_lsp' ,
+}
 
 -- Completion
 local completion
@@ -407,19 +415,19 @@ require('gruvbox').setup({
     transparent_mode = true,
 })
 
-local spinner_index = 0
 -- local spinner_states = ['|', '/', '--', '\', '|', '/', '--', '\']
 -- local spinner_states = ['┤', '┘', '┴', '└', '├', '┌', '┬', '┐']
 -- local spinner_states = ['←', '↑', '→', '↓']
 -- local spinner_states = ['d', 'q', 'p', 'b']
 -- local spinner_states = ['.', 'o', 'O', '°', 'O', 'o', '.']
 -- local spinner_states = ['■', '□', '▪', '▫', '▪', '□', '■']
-local spinner_states = {'←', '↖', '↑', '↗', '→', '↘', '↓', '↙', nil}
+local spinner_states = {'←', '↖', '↑', '↗', '→', '↘', '↓', '↙'}
+local spinner_index = 1
 local active_spinners = 0
 local timer = nil
 
 local function spin_spinner()
-    spinner_index = (spinner_index + 1) % #spinner_states
+    spinner_index = (spinner_index % #spinner_states) + 1
     vim.api.nvim__redraw({statusline = true})
 end
 
@@ -452,7 +460,9 @@ local function neomake_spinner()
         return ""
     end
 
-    return spinner_states[spinner_index]
+    local spinner = spinner_states[spinner_index]
+
+    return spinner
 end
 
 local neomake_hooks = vim.api.nvim_create_augroup("neomake_hooks", {clear=true})
@@ -490,14 +500,16 @@ lualine.setup({
             {
                 'buffers',
                 show_filename_only = false,
+                max_length = vim.o.columns,
             }
         },
+        lualine_z = { 'lsp_status' }
     },
     sections = {
         lualine_a = {'mode'},
         lualine_b = {'branch', 'diff', 'diagnostics'},
         lualine_c = {'filename'},
-        lualine_x = {'encoding', 'fileformat', 'filetype'},
+        lualine_x = {{'encoding', show_bomb = true }, 'fileformat', 'filetype'},
         lualine_y = {neomake_spinner, 'progress'},
         lualine_z = {'location'}
     },

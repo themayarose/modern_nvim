@@ -45,10 +45,9 @@ vim.keymap.set('n', '<leader>bw', '<cmd>bp<cr><cmd>bw #<cr>', {silent=true})
 vim.keymap.set('n', '<leader>bs', '<cmd>b #<cr>', {silent=true})
 vim.keymap.set('n', '<leader>=', '<cmd>bn<cr>', {silent=true})
 vim.keymap.set('n', '<leader>-', '<cmd>bp<cr>', {silent=true})
-vim.keymap.set('n', '<leader>bg', function() return '<cmd>b ' .. vim.v.count .. '<cr>' end, {silent=true})
+vim.keymap.set('n', '<leader>bg', function() vim.cmd('LualineBuffersJump! ' .. vim.v.count1) end)
 
 
-vim.keymap.set('n', '<F2>', '<cmd>Vista !!<cr><c-w><c-p>', {silent=true})
 vim.keymap.set('n', '<leader>0',  '<cmd>Vista finder<cr>', {silent=true})
 vim.keymap.set('n', '<leader>pf', '<cmd>Files<cr>', {silent=true})
 vim.keymap.set('n', '<leader>pg', '<cmd>GFiles<cr>', {silent=true})
@@ -82,8 +81,22 @@ vim.keymap.set('n', '<leader>la', function() vim.lsp.buf.code_action() end, {sil
 vim.keymap.set('n', '<leader>lr', function() vim.lsp.buf.references() end, {silent=true})
 vim.keymap.set('n', '<leader>le', function() vim.diagnostic.open_float() end, {silent=true})
 vim.keymap.set('n', '<leader>ln', function() vim.lsp.buf.rename() end, {silent=true})
-vim.keymap.set('n', '<leader>]', function() vim.diagnostic.jump({diagnostic=vim.diagnostic.get_next()}) end, {silent=true})
-vim.keymap.set('n', '<leader>[', function() vim.diagnostic.jump({diagnostic=vim.diagnostic.get_prev()}) end, {silent=true})
+
+vim.keymap.set('n', '<leader>]', function()
+    local diagnostic = vim.diagnostic.get_next()
+
+    if diagnostic ~= nil then
+        vim.diagnostic.jump({diagnostic=diagnostic})
+    end
+end, {silent=true})
+
+vim.keymap.set('n', '<leader>[', function()
+    local diagnostic = vim.diagnostic.get_prev()
+
+    if diagnostic ~= nil then
+        vim.diagnostic.jump({diagnostic=diagnostic})
+    end
+end, {silent=true})
 
 vim.keymap.set('n', '<leader>dr', function() require('dap').continue() end)
 vim.keymap.set('n', '<F10>', function() require('dap').step_over() end)
