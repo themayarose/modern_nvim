@@ -52,8 +52,6 @@ elseif completion_engine == "coq_nvim" then
 end
 
 
--- Lualine
-
 
 -- FZF
 vim.g.fzf_action = { ['ctrl-x']='split', ['ctrl-v']='vsplit' }
@@ -487,6 +485,8 @@ vim.api.nvim_create_autocmd('BufReadPost', {
 })
 
 
+-- Lualine
+
 local lualine = require('lualine')
 
 lualine.setup({
@@ -500,7 +500,8 @@ lualine.setup({
             {
                 'buffers',
                 show_filename_only = false,
-                max_length = vim.o.columns,
+                max_length = function () return vim.o.columns - 15 end,
+                mode = 2,
             }
         },
         lualine_z = { 'lsp_status' }
