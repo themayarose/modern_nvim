@@ -363,6 +363,8 @@ dap.configurations.rust = {
         name = "Launch file",
         type = "cppdbg",
         request = "launch",
+        MIMode = "gdb",
+        miDebuggerPath = vim.g.gdb_path,
         program = function ()
             return vim.fn.input('Executable: ', vim.fn.getcwd() .. '/', 'file')
         end,
