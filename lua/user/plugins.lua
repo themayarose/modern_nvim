@@ -349,6 +349,28 @@ elseif dotnet_debugger == "vsdbg" then
     -- })
 end
 
+dap.adapters.cppdbg = {
+    id = "cppdbg",
+    type = "executable",
+    command = vim.g.cppdbg_path,
+    options = {
+        detached = false
+    }
+}
+
+dap.configurations.rust = {
+    {
+        name = "Launch file",
+        type = "cppdbg",
+        request = "launch",
+        program = function ()
+            return vim.fn.input('Executable: ', vim.fn.getcwd() .. '/', 'file')
+        end,
+        cwd = "${workspaceFolder}",
+        stopAtEntry = false,
+    },
+}
+
 dap.defaults.coreclr.exception_breakpoints = { 'user-unhandled' }
 
 dap.listeners.before.attach.dapui_config = function()
