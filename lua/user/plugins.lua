@@ -137,7 +137,7 @@ elseif completion_engine == "nvim-cmp" then
             ['<C-b>'] = completion.mapping.scroll_docs(-4),
             ['<C-f>'] = completion.mapping.scroll_docs(4),
             ['<C-Space>'] = completion.mapping.complete(),
-            ['<Esc>'] = completion.mapping.abort(),
+            ['<Space>'] = completion.mapping.abort(),
             ['<CR>'] = completion.mapping.confirm({ select = true }),
             ['<Tab>'] = function (fallback)
                 if not completion.select_next_item() then
@@ -282,7 +282,7 @@ csls_ext.buf_read_cmd_bind()
 
 require('lsp-overloads').setup({
     ui = { border = "rounded" },
-    keymaps = { close_signature = "<esc>" },
+    keymaps = { close_signature = "<space>" },
     display_automatically = false
 })
 
@@ -546,7 +546,7 @@ local lualine = require('lualine')
 
 lualine.setup({
     options = {
-        icons_enabled = false,
+        icons_enabled = true,
         always_show_tabline = true,
         globalstatus = true,
     },
