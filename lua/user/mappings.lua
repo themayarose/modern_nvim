@@ -103,6 +103,7 @@ vim.keymap.set('n', '<F10>', function() require('dap').step_over() end)
 vim.keymap.set('n', '<F11>', function() require('dap').step_into() end)
 vim.keymap.set('n', '<F12>', function() require('dap').step_out() end)
 vim.keymap.set('n', '<Leader>db', function() require('dap').toggle_breakpoint() end)
+vim.keymap.set('n', '<Leader>dt', function() require('dapui').toggle() end)
 vim.keymap.set('n', '<Leader>dea', function() require('dap').defaults.coreclr.exception_breakpoints = {'all'}; vim.print("Catch all exceptions.") end)
 vim.keymap.set('n', '<Leader>deu', function() require('dap').defaults.coreclr.exception_breakpoints = {'user-unhandled'}; vim.print("Catch only unhandled exceptions.") end)
 

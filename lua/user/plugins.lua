@@ -103,14 +103,36 @@ elseif completion_engine == "nvim-cmp" then
         return col ~= 0 and vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match('%s') == nil
     end
 
+    local function border(hl_name)
+        return {
+            { "╭", hl_name },
+            { "─", hl_name },
+            { "╮", hl_name },
+            { "│", hl_name },
+            { "╯", hl_name },
+            { "─", hl_name },
+            { "╰", hl_name },
+            { "│", hl_name },
+        }
+    end
+
     completion.setup({
         snippet = {
             expand = function(args) vim.snippet.expand(args.body) end
         },
         window = {
-            completion = completion.config.window.bordered(),
-            documentation = completion.config.window.bordered(),
+            completion = completion.config.window.bordered({
+                border = border("CmpBorder"),
+                winhighlight = "Normal:CmpPmenu,CursorLine:PmenuSel,Search:None",
+            }),
+            documentation = {
+                border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
+            },
         },
+        -- window = {
+        --     completion = completion.config.window.bordered({}),
+        --     documentation = completion.config.window.bordered({}),
+        -- },
         mapping = completion.mapping.preset.insert({
             ['<C-b>'] = completion.mapping.scroll_docs(-4),
             ['<C-f>'] = completion.mapping.scroll_docs(4),
@@ -119,7 +141,9 @@ elseif completion_engine == "nvim-cmp" then
             ['<CR>'] = completion.mapping.confirm({ select = true }),
             ['<Tab>'] = function (fallback)
                 if not completion.select_next_item() then
-                    if vim.bo.buftype ~= 'prompt' and has_words_before() then
+                    if vim.snippet.active({direction = 1}) then
+                        vim.snippet.jump(1)
+                    elseif vim.bo.buftype ~= 'prompt' and has_words_before() then
                         completion.complete()
                     else
                         fallback()
@@ -128,7 +152,9 @@ elseif completion_engine == "nvim-cmp" then
             end,
             ['<S-Tab>'] = function (fallback)
                 if not completion.select_prev_item() then
-                    if vim.bo.buftype ~= 'prompt' and has_words_before() then
+                    if vim.snippet.active({direction = -1}) then
+                        vim.snippet.jump(-1)
+                    elseif vim.bo.buftype ~= 'prompt' and has_words_before() then
                         completion.complete()
                     else
                         fallback()
@@ -146,8 +172,9 @@ elseif completion_engine == "nvim-cmp" then
             { name = 'path' },
         }),
         formatting = {
+            fields = { 'icon', 'abbr', 'kind', 'menu' },
             format = lspkind.cmp_format({
-                mode = "symbol_text",
+                mode = "symbol",
                 menu = ({
                     buffer = "[BUF]",
                     nvim_lsp = "[LSP]",
@@ -408,12 +435,16 @@ vim.g.gruvbox_italic = 1
 vim.g.gruvbox_contrast_dark = 'hard'
 vim.g.gruvbox_transparent_bg = 1
 
+-- Web devicons
+local devicons = require('nvim-web-devicons')
+
+devicons.setup()
+
 -- Neomake
 
 vim.g.neomake_logfile = vim.env.HOME .. '/neomake.log'
 vim.g.neomake_open_list = 0
 vim.g.neomake_verbose = 1
-vim.g["airline#extensions#neomake#enabled"] = 1
 
 vim.g.neomake_restore_maker = {
     exe='make',
