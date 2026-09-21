@@ -393,7 +393,7 @@ dap.configurations.rust = {
         MIMode = "gdb",
         miDebuggerPath = vim.g.gdb_path,
         program = function ()
-            return vim.fn.input('Executable: ', vim.fn.getcwd() .. '/', 'file')
+            return vim.fn.input('Executable: ', vim.fn.getcwd() .. vim.g.path_sep, 'file')
         end,
         cwd = "${workspaceFolder}",
         stopAtEntry = false,
