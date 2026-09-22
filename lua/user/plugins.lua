@@ -165,8 +165,8 @@ elseif completion_engine == "nvim-cmp" then
             },
         },
         mapping = completion.mapping.preset.insert({
-            ['<C-b>'] = completion.mapping.scroll_docs(-4),
-            ['<C-f>'] = completion.mapping.scroll_docs(4),
+            ['<C-k>'] = completion.mapping.scroll_docs(-4),
+            ['<C-j>'] = completion.mapping.scroll_docs(4),
             ['<C-Space>'] = completion.mapping.complete(),
             ['<Space>'] = completion.mapping.abort(),
             ['<CR>'] = completion.mapping.confirm({ select = true }),
