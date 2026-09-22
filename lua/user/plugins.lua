@@ -116,23 +116,52 @@ elseif completion_engine == "nvim-cmp" then
         }
     end
 
+    lspkind.init({
+        symbol_map = {
+            Text = "  ",
+            Method = " 󰆧 ",
+            Function = " 󰊕 ",
+            Constructor = "  ",
+            Field = " 󰇽 ",
+            Variable = " 󰂡 ",
+            Class = " 󰠱 ",
+            Interface = "  ",
+            Module = "  ",
+            Property = " 󰜢 ",
+            Unit = "  ",
+            Value = " 󰎠 ",
+            Enum = "  ",
+            Keyword = " 󰌋 ",
+            Snippet = "  ",
+            Color = " 󰏘 ",
+            File = " 󰈙 ",
+            Reference = "  ",
+            Folder = " 󰉋 ",
+            EnumMember = "  ",
+            Constant = " 󰏿 ",
+            Struct = "  ",
+            Event = "  ",
+            Operator = " 󰆕 ",
+            TypeParameter = " 󰅲 ",
+        }
+    })
+
     completion.setup({
         snippet = {
             expand = function(args) vim.snippet.expand(args.body) end
         },
         window = {
             completion = completion.config.window.bordered({
-                border = border("CmpBorder"),
-                winhighlight = "Normal:CmpPmenu,CursorLine:PmenuSel,Search:None",
+                side_padding = 0,
+                border = { "", "", "", "", "", "", "", "" },
+                winhighlight = "Normal:Pmenu,CursorLine:PmenuSel,Search:None",
             }),
             documentation = {
-                border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
+                -- border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
+                border = { " ", " ", " ", " ", " ", " ", " ", " " },
+                winhighlight = "Normal:Pmenu,FloatBorder:Pmenu,CursorLine:PmenuSel,Search:None",
             },
         },
-        -- window = {
-        --     completion = completion.config.window.bordered({}),
-        --     documentation = completion.config.window.bordered({}),
-        -- },
         mapping = completion.mapping.preset.insert({
             ['<C-b>'] = completion.mapping.scroll_docs(-4),
             ['<C-f>'] = completion.mapping.scroll_docs(4),
@@ -176,9 +205,9 @@ elseif completion_engine == "nvim-cmp" then
             format = lspkind.cmp_format({
                 mode = "symbol",
                 menu = ({
-                    buffer = "[BUF]",
-                    nvim_lsp = "[LSP]",
-                    path = "[PTH]",
+                    buffer = " BUF ",
+                    nvim_lsp = " LSP ",
+                    path = " PTH ",
                 })
             }),
         },
@@ -386,18 +415,22 @@ dap.adapters.cppdbg = {
 }
 
 dap.configurations.rust = {
-    {
-        name = "Launch file",
-        type = "cppdbg",
-        request = "launch",
-        MIMode = "gdb",
-        miDebuggerPath = vim.g.gdb_path,
-        program = function ()
-            return vim.fn.input('Executable: ', vim.fn.getcwd() .. vim.g.path_sep, 'file')
-        end,
-        cwd = "${workspaceFolder}",
-        stopAtEntry = false,
-    },
+    -- {
+    --     name = "GDB",
+    --     type = "cppdbg",
+    --     request = "launch",
+    --     MIMode = "gdb",
+    --     miDebuggerPath = vim.g.gdb_path,
+    --     program = "",
+    --     cwd = "${workspaceFolder}",
+    --     justMyCode = false,
+    --     stopAtEntry = false,
+    --     console = "integratedTerminal",
+    --     logging = {
+    --         moduleLoad = false,
+    --         processExit = false,
+    --     },
+    -- },
 }
 
 dap.defaults.coreclr.exception_breakpoints = { 'user-unhandled' }
@@ -426,14 +459,6 @@ vim.g.EasyMotion_startofline = 0
 -- Float preview
 vim.g['float_preview#docked'] = 0
 
--- Gruvbox
-vim.g.gruvbox_italic = 1
-vim.g.gruvbox_underline = 1
-vim.g.gruvbox_undercurl = 1
-vim.g.gruvbox_bold = 1
-vim.g.gruvbox_italic = 1
-vim.g.gruvbox_contrast_dark = 'hard'
-vim.g.gruvbox_transparent_bg = 1
 
 -- Web devicons
 local devicons = require('nvim-web-devicons')
@@ -464,8 +489,10 @@ require('gruvbox').setup({
         operators = true,
         folds = false,
     },
+    contrast = "hard",
     strikethrough = true,
     transparent_mode = true,
+    overrides = require('user.cmp-gruvbox'),
 })
 
 -- local spinner_states = ['|', '/', '--', '\', '|', '/', '--', '\']
