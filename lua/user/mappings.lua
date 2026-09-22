@@ -48,10 +48,10 @@ vim.keymap.set('n', '<leader>-', '<cmd>bp<cr>', {silent=true})
 vim.keymap.set('n', '<leader>bg', function() vim.cmd('LualineBuffersJump! ' .. vim.v.count1) end)
 
 
-vim.keymap.set('n', '<leader>0',  '<cmd>Vista finder<cr>', {silent=true})
-vim.keymap.set('n', '<leader>pf', '<cmd>Files<cr>', {silent=true})
-vim.keymap.set('n', '<leader>pg', '<cmd>GFiles<cr>', {silent=true})
-vim.keymap.set('n', '<leader>bf', '<cmd>Buffers<cr>', {silent=true})
+vim.keymap.set('n', '<leader>0',  '<cmd>FzfLua lsp_document_symbols<cr>', {silent=true})
+vim.keymap.set('n', '<leader>pf', '<cmd>FzfLua files<cr>', {silent=true})
+vim.keymap.set('n', '<leader>pg', '<cmd>FzfLua git_files<cr>', {silent=true})
+vim.keymap.set('n', '<leader>bf', '<cmd>FzfLua buffers<cr>', {silent=true})
 
 
 vim.keymap.set('n', '<leader>mb', function() vim.cmd('Neomake!') end)

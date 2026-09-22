@@ -8,8 +8,7 @@ vim.pack.add({
     'https://github.com/nvim-tree/nvim-web-devicons',
     'https://github.com/nvim-lualine/lualine.nvim',
     'https://github.com/junegunn/fzf',
-    'https://github.com/junegunn/fzf.vim',
-    'https://github.com/liuchengxu/vista.vim',
+    'https://github.com/ibhagwan/fzf-lua',
     'https://github.com/neovim/nvim-lspconfig',
     'https://github.com/Decodetalkers/csharpls-extended-lsp.nvim',
     'https://github.com/Issafalcon/lsp-overloads.nvim',
@@ -54,7 +53,26 @@ end
 
 
 -- FZF
-vim.g.fzf_action = { ['ctrl-x']='split', ['ctrl-v']='vsplit' }
+
+local fzf = require('fzf-lua')
+
+fzf.setup({
+    winopts = {
+        border = 'single',
+        backdrop = 100,
+        preview = {
+            border = 'single',
+        },
+    },
+    actions = {
+        ["enter"] = fzf.actions.file_edit,
+        ["ctrl-s"] = fzf.actions.file_split,
+        ["ctrl-v"] = fzf.actions.file_vsplit,
+        ["alt-i"] = fzf.actions.toggle_ignore,
+        ["alt-h"] = fzf.actions.toggle_hidden,
+        ["alt-f"] = fzf.actions.toggle_follow,
+    },
+})
 
 -- Vista
 vim.g.vista_executive_for = {
