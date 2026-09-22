@@ -153,12 +153,14 @@ elseif completion_engine == "nvim-cmp" then
         window = {
             completion = completion.config.window.bordered({
                 side_padding = 0,
-                border = { "", "", "", "", "", "", "", "" },
+                border = nil,
+                -- border = { "", "", "", "", "", "", "", "" },
                 winhighlight = "Normal:Pmenu,CursorLine:PmenuSel,Search:None",
             }),
             documentation = {
                 -- border = { "╭", "─", "╮", "│", "╯", "─", "╰", "│" },
-                border = { " ", " ", " ", " ", " ", " ", " ", " " },
+                -- border = { " ", " ", " ", " ", " ", " ", " ", " " },
+                border = "solid",
                 winhighlight = "Normal:Pmenu,FloatBorder:Pmenu,CursorLine:PmenuSel,Search:None",
             },
         },
