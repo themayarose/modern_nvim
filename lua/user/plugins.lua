@@ -186,7 +186,7 @@ elseif completion_engine == "nvim-cmp" then
             ['<C-k>'] = completion.mapping.scroll_docs(-4),
             ['<C-j>'] = completion.mapping.scroll_docs(4),
             ['<C-Space>'] = completion.mapping.complete(),
-            ['<Space>'] = completion.mapping.abort(),
+            ['<M-Space>'] = completion.mapping.abort(),
             ['<CR>'] = completion.mapping.confirm({ select = true }),
             ['<Tab>'] = function (fallback)
                 if not completion.select_next_item() then
