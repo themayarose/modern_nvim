@@ -28,6 +28,7 @@ vim.pack.add({
     'https://github.com/rust-lang/rust.vim',
     'https://github.com/sheerun/vim-polyglot',
     'https://github.com/ncm2/float-preview.nvim',
+    'https://github.com/petertriho/nvim-scrollbar',
 })
 
 if dotnet_analyzer == "roslyn" then
@@ -618,3 +619,6 @@ lualine.setup({
     },
 })
 
+-- scrollbar
+
+require("scrollbar").setup()
