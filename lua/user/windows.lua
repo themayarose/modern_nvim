@@ -1,9 +1,9 @@
 vim.g.csharpls_path = "C:\\Users\\maya\\.dotnet\\tools\\csharp-ls.EXE"
 vim.g.netcoredbg = "C:\\Users\\maya\\scoop\\shims\\netcoredbg.EXE"
 
-vim.g.signer_path = vim.env.HOME .. "/AppData/Local/Programs/Microsoft VS Code/7baac39ec3/resources/app/node_modules.asar.unpacked/vsda/build/Release/vsda.node"
-vim.g.debugger_path = vim.env.HOME .. "/.vscode/extensions/ms-dotnettools.csharp-11.2.14-win32-x64/.debugger/x86_64/vsdbg-ui.exe"
-vim.g.cppdbg_path = vim.env.HOME .. "/.vscode/extensions/ms-vscode.cpptools-1.35.3-win32-x64/debugAdapters/bin/OpenDebugAD7.exe"
+vim.g.signer_path = vim.env.HOME .. "/AppData/Local/Programs/Microsoft VS Code/6d62b1d5da/resources/app/node_modules.asar.unpacked/vsda/build/Release/vsda.node"
+vim.g.debugger_path = vim.env.HOME .. "/.vscode/extensions/ms-dotnettools.csharp-11.3.18-win32-x64/.debugger/x86_64/vsdbg-ui.exe"
+vim.g.cppdbg_path = vim.env.HOME .. "/.vscode/extensions/ms-vscode.cpptools-1.35.4-win32-x64/debugAdapters/bin/OpenDebugAD7.exe"
 vim.g.gdb_path = vim.env.HOME .. "/scoop/shims/gdb.exe"
 vim.g.path_sep = "\\"
 
