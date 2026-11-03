@@ -3,7 +3,7 @@ vim.g.netcoredbg = "/usr/sbin/netcoredbg"
 
 vim.g.signer_path = "/usr/share/code/resources/app/node_modules.asar.unpacked/vsda/build/Release/vsda.node"
 vim.g.debugger_path = vim.env.HOME .. "/.vscode/extensions/ms-dotnettools.csharp-2.160.4-linux-x64/.debugger/vsdbg-ui"
-vim.g.cppdbg_path = vim.env.HOME .. "/.vscode/extensions/ms-vscode.cpptools-1.34.4-linux-x64/debugAdapters/bin/OpenDebugAD7"
+vim.g.cppdbg_path = vim.env.HOME .. "/.vscode/extensions/ms-vscode.cpptools-1.35.6-linux-x64/debugAdapters/bin/OpenDebugAD7"
 vim.g.gdb_path = "/usr/bin/gdb"
 vim.g.path_sep = "/"
 
