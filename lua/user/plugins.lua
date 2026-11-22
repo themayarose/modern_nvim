@@ -29,6 +29,7 @@ vim.pack.add({
     'https://github.com/sheerun/vim-polyglot',
     'https://github.com/ncm2/float-preview.nvim',
     'https://github.com/petertriho/nvim-scrollbar',
+    'https://github.com/nvim-treesitter/nvim-treesitter',
 })
 
 if dotnet_analyzer == "roslyn" then
@@ -622,3 +623,8 @@ lualine.setup({
 -- scrollbar
 
 require("scrollbar").setup()
+
+-- treesitter
+
+require('nvim-treesitter').install { 'c_sharp', 'razor', 'html', 'rust', 'lua' }
+
